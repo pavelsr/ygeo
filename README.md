@@ -1,6 +1,6 @@
 # NAME
 
-App::ygeo::yaml - Set of functions for working with yaml config files
+ygeo - command line utility based on Yandex::Geo that prints data to csv
 
 # VERSION
 
@@ -8,40 +8,23 @@ version 0.01
 
 # SYNOPSIS
 
-    use App::ygeo::yaml qw[:ALL];
-    
-    my @config_files = (
-        File::Spec->catfile(getcwd(), '.ygeo'), 
-        $ENV{"HOME"}.'/.ygeo'
-    );
-    my @required_keys = qw/api_key city/;
+    ygeo "автомойки самообслуживания" ROV 25
 
-    my $params = data_from_first_valid_cfg( \@config_files, \@required_keys );
-    $params = create_cfg($config_files[0], @required_keys) unless $params;
+1st positional argument is text to search 
 
-# data\_from\_first\_valid\_cfg
+2nd positional argument (optional) is IATA city code (see ["get" in Yandex::Geo](https://metacpan.org/pod/Yandex::Geo#get) and ["cities\_bbox" in Yandex::Geo](https://metacpan.org/pod/Yandex::Geo#cities_bbox) for more info). If no specified ygeo will take city from cfg.
 
-Check for first valid config and return data from it as hash
+3rd positional argument (optional) is number of results to return. By default: 500
 
-    data_from_first_valid_cfg( [ '.ygeo', '~/.ygeo' ], [ 'apikey', 'city'] );
+# DESCRIPTION
 
-If no valid config found return undef
+Command line utility that do search via Yandex Maps Company Search API in specified city and prints result in csv file
 
-# keys\_exists\_no\_empty
+By default it:
 
-Check that all required keys exists and their values are not empty
+    prints maximum 500 companies (API restriction)
 
-    keys_exists_no_empty( { api_key => 1111, city => 'ROV' } , ['api_key', 'city'] )
-
-# create\_cfg
-
-Create config in current directory with required parameters
-
-    create_cfg( '.ygeo', 'apikey', 'city' );
-
-Will create user promt 
-
-Return hash with inputed parameters
+    looks for apikey and city in C<.ygeo> file. C<.ygeo> config has yaml syntax. Firsty it search C<.ygeo> file in current directory, then in home directory
 
 # AUTHOR
 

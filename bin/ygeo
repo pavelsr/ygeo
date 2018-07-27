@@ -20,7 +20,7 @@ By default it:
 
 2nd positional argument (optional) is IATA city code (see L<Yandex::Geo/get> and L<Yandex::Geo/cities_bbox> for more info). If no specified ygeo will take city from cfg.
 
-3rd positional argument (optional) is finename to print data. By default: 500
+3rd positional argument (optional) is number of results to return. By default: 500
 
 =cut
 
