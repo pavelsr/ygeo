@@ -1,0 +1,84 @@
+# ABSTRACT: command line utility based on Yandex::Geo that prints data to csv
+
+package ygeo;
+
+=head1 DESCRIPTION
+
+Command line utility that do search via Yandex Maps Company Search API in specified city and prints result in csv file
+
+By default it:
+
+    prints maximum 500 companies (API restriction)
+
+    looks for apikey and city in C<.ygeo> file. C<.ygeo> config has yaml syntax. Firsty it search C<.ygeo> file in current directory, then in home directory
+
+=head1 SYNOPSIS
+    
+    ygeo "автомойки самообслуживания" ROV 25
+
+1st positional argument is text to search 
+
+2nd positional argument (optional) is IATA city code (see L<Yandex::Geo/get> and L<Yandex::Geo/cities_bbox> for more info). If no specified ygeo will take city from cfg.
+
+3rd positional argument (optional) is finename to print data. By default: 500
+
+=cut
+
+use strict;
+use warnings;
+use Text::CSV;
+use Cwd;
+use File::Spec;
+use Yandex::Geo;
+use utf8;
+
+use feature 'say';
+
+use App::ygeo::yaml qw(
+    data_from_first_valid_cfg 
+    create_cfg
+);
+
+my @config_files = (
+    File::Spec->catfile(getcwd(), '.ygeo'), 
+    $ENV{"HOME"}.'/.ygeo'
+);
+
+my @required_keys = qw/apikey city/;
+
+my $params = data_from_first_valid_cfg( \@config_files, \@required_keys );
+$params = create_cfg($config_files[0], @required_keys) unless $params;
+
+my $text = $ARGV[0];
+die 'No search text specified' unless defined $text && length $text;
+my $city = $ARGV[1] || $params->{city} || 'ROV' ;
+
+my $csv_filename = $ARGV[0].'.csv';
+my $csv = Text::CSV->new() or die "Cannot use CSV: ".Text::CSV->error_diag ();
+$csv->eol ("\012");
+$csv->sep_char (";");
+open my $fh, ">:encoding(utf8)", $csv_filename or die "$csv_filename: $!";
+
+my $results_limit = $ARGV[2] || 500;
+
+say "Search: $text in city: $city";
+say "Yandex Maps API key: $params->{apikey}";
+
+my $yndx_geo = Yandex::Geo->new(
+    apikey => $params->{apikey},
+    only_city => $city,
+    results => $results_limit
+);
+
+utf8::decode($text);
+
+my $res = $yndx_geo->y_companies($text);
+my $total = scalar @$res;
+say "Companies found: ".$total;
+
+for my $company (@$res) {
+    $csv->print( $fh, $company->to_array );
+}
+
+close $fh or die "$csv_filename: $!";
+
