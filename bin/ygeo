@@ -1,3 +1,5 @@
+#!perl
+
 # ABSTRACT: command line utility based on Yandex::Geo that prints data to csv
 
 package ygeo;
