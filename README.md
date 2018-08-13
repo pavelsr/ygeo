@@ -1,30 +1,54 @@
 # NAME
 
-ygeo - command line utility based on Yandex::Geo that prints data to csv
+App::ygeo - Extract companies data from Yandex Maps to csv file
 
 # VERSION
 
-version 0.02
+version 0.01
 
 # SYNOPSIS
 
-    ygeo "автомойки самообслуживания" ROV 25
-
-1st positional argument is text to search 
-
-2nd positional argument (optional) is IATA city code (see ["get" in Yandex::Geo](https://metacpan.org/pod/Yandex::Geo#get) and ["cities\_bbox" in Yandex::Geo](https://metacpan.org/pod/Yandex::Geo#cities_bbox) for more info). If no specified ygeo will take city from cfg.
-
-3rd positional argument (optional) is number of results to return. By default: 500
+    use App::ygeo;
+    my $ygeo = App::ygeo->new( apikey => '12345', city => "ROV" );
+    $ygeo->get_and_print(text => 'autoservice', city => 'ROV', csv_filename => 'auto.csv', verbose => 1);
 
 # DESCRIPTION
 
-Command line utility that do search via Yandex Maps Company Search API in specified city and prints result in csv file
-
 By default it:
 
-    prints maximum 500 companies (API restriction)
+get data about maximum 500 companies (Yandex API restriction)
 
-    looks for apikey and city in C<.ygeo> file. C<.ygeo> config has yaml syntax. Firsty it search C<.ygeo> file in current directory, then in home directory
+Order of looking for apikey 
+
+\- provided params
+
+\- `.ygeo` file (firsty it search `.ygeo` file in current directory, then in home directory)
+
+`.ygeo` config has yaml syntax. You can reuse [App::ygeo::yaml](https://metacpan.org/pod/App::ygeo::yaml) in your own projects
+
+## get\_and\_print
+
+    $ygeo->get_and_print(text => 'autoservice', city => 'ROV', csv_filename => 'auto.csv', verbose => 1);
+
+Get and prints data in csv data
+
+Params:
+
+text - search text
+city - city to search, e.g. ROV is Rostov-on-Don
+csv\_filename - name of output csv file
+results\_limit -number of results returned
+
+Columns sequence is according ["to\_array" in Yandex::Geo::Company](https://metacpan.org/pod/Yandex::Geo::Company#to_array) method
+
+Results are printed like
+
+    my $res = $yndx_geo->y_companies( $text );
+    for my $company (@$res) {
+        $csv->print( $fh, $company->to_array );
+    }
+
+Return 1 if finished fine
 
 # AUTHOR
 
