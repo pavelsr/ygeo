@@ -4,7 +4,7 @@ ygeo - command line utility based on Yandex::Geo that prints data to csv
 
 # VERSION
 
-version 0.01
+version 0.02
 
 # SYNOPSIS
 
