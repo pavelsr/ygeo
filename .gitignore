@@ -37,3 +37,4 @@ inc/
 /App-ygeo-*
 .ygeo
 test.pl
+/*.csv
