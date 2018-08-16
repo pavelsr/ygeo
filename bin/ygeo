@@ -40,6 +40,10 @@ use App::ygeo::yaml qw(
     create_cfg
 );
 
+use Pod::Usage;
+pod2usage() unless @ARGV >= 1;
+pod2usage() if ( defined $ARGV[0] && $ARGV[0] eq '--help' );
+
 my @config_files = (
     File::Spec->catfile(getcwd(), '.ygeo'), 
     $ENV{"HOME"}.'/.ygeo'
@@ -51,9 +55,10 @@ $params = create_cfg($config_files[0], @required_keys) unless $params;
 
 my $text = $ARGV[0];
 my $city = $ARGV[1] || $params->{city} || 'ROV';
+my $results = $ARGV[2] || 500 ;
 my $csv_filename = $ARGV[0].'.csv';
 
 utf8::decode($text);
 
 my $ygeo = App::ygeo->new( apikey => $params->{apikey}, city => $city );
-$ygeo->get_and_print(text => $text, verbose => 1);
+$ygeo->get_and_print(text => $text, results_limit => $results, verbose => 1);

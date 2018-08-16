@@ -4,7 +4,7 @@ App::ygeo - Extract companies data from Yandex Maps to csv file
 
 # VERSION
 
-version 0.01
+version 0.02
 
 # SYNOPSIS
 
@@ -35,13 +35,16 @@ Get and prints data in csv data
 Params:
 
 text - search text
+
 city - city to search, e.g. ROV is Rostov-on-Don
+
 csv\_filename - name of output csv file
+
 results\_limit -number of results returned
 
 Columns sequence is according ["to\_array" in Yandex::Geo::Company](https://metacpan.org/pod/Yandex::Geo::Company#to_array) method
 
-Results are printed like
+Results are printed to csv like
 
     my $res = $yndx_geo->y_companies( $text );
     for my $company (@$res) {
